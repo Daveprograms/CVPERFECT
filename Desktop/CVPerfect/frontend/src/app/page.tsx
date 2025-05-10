@@ -1,30 +1,14 @@
+'use client';
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { 
   DocumentTextIcon, 
   SparklesIcon, 
   ChartBarIcon 
 } from '@heroicons/react/24/outline';
-
-const features = [
-  {
-    name: 'AI-Powered Analysis',
-    description: 'Get instant feedback on your resume with our advanced AI technology.',
-    icon: SparklesIcon,
-  },
-  {
-    name: 'Real-time Preview',
-    description: 'See your changes live with our LaTeX preview system.',
-    icon: DocumentTextIcon,
-  },
-  {
-    name: 'ATS Optimization',
-    description: 'Ensure your resume passes through Applicant Tracking Systems.',
-    icon: ChartBarIcon,
-  },
-];
 
 interface ContactFormData {
   name: string;
@@ -69,13 +53,13 @@ export default function Landing() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/signup"
+              href="/sign-up"
               className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
             >
               Get Started
             </Link>
             <Link
-              to="/signin"
+              href="/sign-in"
               className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-100 dark:hover:bg-blue-800"
             >
               Sign In
@@ -198,7 +182,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="py-8 px-4 sm:px-6 lg:px-8 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto text-center">
-          <p>© 2025 by David. All rights reserved.</p>
+          <p>© 2024 CVPerfect. All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -1,100 +1,120 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type UserType = 'free' | 'pro' | 'one-time';
-export type SubscriptionStatus = 'active' | 'inactive' | 'expired';
-
 interface User {
   id: string;
   email: string;
   name: string;
-  type: UserType;
-  subscriptionStatus: SubscriptionStatus;
-  remainingCredits: number;
-  stripeCustomerId?: string;
-  subscriptionId?: string;
+  credits: number;
+  isPro: boolean;
 }
 
 interface AuthState {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
-  signIn: (user: User) => void;
-  signOut: () => void;
-  updateUser: (updates: Partial<User>) => void;
-  decrementCredits: () => void;
-  addCredits: (amount: number) => void;
-  applyPromoCode: (code: string) => Promise<boolean>;
+  isLoading: boolean;
+  error: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => void;
+  updateUser: (user: Partial<User>) => void;
 }
 
-const useAuthStore = create<AuthState>()(
+export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
+      token: null,
       isAuthenticated: false,
+      isLoading: false,
+      error: null,
 
-      signIn: (user: User) => {
-        set({ user, isAuthenticated: true });
-      },
-
-      signOut: () => {
-        // Clear user data and redirect to landing page
-        set({ user: null, isAuthenticated: false });
-        window.location.href = '/';
-      },
-
-      updateUser: (updates: Partial<User>) => {
-        const currentUser = get().user;
-        if (currentUser) {
-          set({ user: { ...currentUser, ...updates } });
-        }
-      },
-
-      decrementCredits: () => {
-        const currentUser = get().user;
-        if (currentUser && currentUser.type === 'one-time' && currentUser.remainingCredits > 0) {
-          set({
-            user: {
-              ...currentUser,
-              remainingCredits: currentUser.remainingCredits - 1
-            }
+      login: async (email: string, password: string) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
           });
-        }
-      },
 
-      addCredits: (amount: number) => {
-        const currentUser = get().user;
-        if (currentUser) {
-          set({
-            user: {
-              ...currentUser,
-              remainingCredits: currentUser.remainingCredits + amount
-            }
-          });
-        }
-      },
-
-      applyPromoCode: async (code: string) => {
-        // TODO: Implement actual promo code validation with backend
-        // For now, we'll simulate a successful promo code
-        if (code === 'ADMIN2024') {
-          const currentUser = get().user;
-          if (currentUser) {
-            set({
-              user: {
-                ...currentUser,
-                remainingCredits: currentUser.remainingCredits + 1
-              }
-            });
-            return true;
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to login');
           }
+
+          const data = await response.json();
+          set({
+            user: data.user,
+            token: data.token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : 'An error occurred',
+            isLoading: false,
+          });
+          throw error;
         }
-        return false;
-      }
+      },
+
+      signup: async (name: string, email: string, password: string) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password }),
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to sign up');
+          }
+
+          const data = await response.json();
+          set({
+            user: data.user,
+            token: data.token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : 'An error occurred',
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      logout: () => {
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          error: null,
+        });
+      },
+
+      updateUser: (userData: Partial<User>) => {
+        const currentUser = get().user;
+        if (currentUser) {
+          set({
+            user: { ...currentUser, ...userData },
+          });
+        }
+      },
     }),
     {
       name: 'auth-storage',
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
-);
-
-export { useAuthStore }; 
+); 

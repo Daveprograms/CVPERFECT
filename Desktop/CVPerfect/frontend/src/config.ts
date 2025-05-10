@@ -1,13 +1,13 @@
 // API Configuration
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 // Stripe Configuration
-export const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-export const STRIPE_PRO_PRICE_ID = import.meta.env.VITE_STRIPE_PRO_PRICE_ID;
-export const STRIPE_ONE_TIME_PRICE_ID = import.meta.env.VITE_STRIPE_ONE_TIME_PRICE_ID;
+export const STRIPE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+export const STRIPE_PRO_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID;
+export const STRIPE_ONE_TIME_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_ONE_TIME_PRICE_ID;
 
 // Feature Flags
-export const ENABLE_PROMO_CODES = import.meta.env.VITE_ENABLE_PROMO_CODES === 'true';
+export const ENABLE_PROMO_CODES = process.env.NEXT_PUBLIC_ENABLE_PROMO_CODES === 'true';
 
 // Constants
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
