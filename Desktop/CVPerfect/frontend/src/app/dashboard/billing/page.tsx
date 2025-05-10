@@ -11,78 +11,54 @@ const tiers = [
   {
     name: 'Basic',
     id: 'basic',
-    priceId: STRIPE_ONE_TIME_PRICE_ID,
     price: '4.99',
     description: 'Perfect for occasional resume updates.',
     features: BASIC_FEATURES,
-    buttonText: 'Buy Credits',
+    buttonText: 'Coming Soon',
     buttonVariant: 'outline',
   },
   {
     name: 'Pro',
     id: 'pro',
-    priceId: STRIPE_PRO_PRICE_ID,
     price: '19.99',
     description: 'Best for job seekers and career changers.',
     features: PRO_FEATURES,
-    buttonText: 'Subscribe',
+    buttonText: 'Coming Soon',
     buttonVariant: 'solid',
   },
 ];
 
 export default function Billing() {
-  const { user, updateUser } = useAuthStore();
+  const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  const handleSubscribe = async (priceId: string, tierId: string) => {
-    setIsLoading(tierId);
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/create-checkout-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          priceId,
-          tierId,
-          userId: user?.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session');
-      }
-
-      const { url } = await response.json();
-      window.location.href = url;
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to process payment');
-    } finally {
-      setIsLoading(null);
-    }
+  const handleSubscribe = async (tierId: string) => {
+    toast.info('Payment features coming soon!');
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
-          Billing & Subscription
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+          Choose Your Plan
         </h2>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Choose the plan that best fits your needs.
+        <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">
+          Payment features coming soon! For now, enjoy our free trial.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto">
         {tiers.map((tier) => (
           <motion.div
             key={tier.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className={`rounded-lg bg-white dark:bg-gray-800 shadow ${
-              user?.isPro && tier.id === 'pro' ? 'ring-2 ring-blue-500' : ''
-            }`}
+            className={`rounded-lg border ${
+              tier.id === 'pro'
+                ? 'border-blue-500 shadow-lg dark:border-blue-400'
+                : 'border-gray-200 dark:border-gray-700'
+            } bg-white dark:bg-gray-800`}
           >
             <div className="p-6">
               <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
@@ -98,30 +74,25 @@ export default function Billing() {
                 </span>
               </p>
               <button
-                onClick={() => handleSubscribe(tier.priceId, tier.id)}
-                disabled={isLoading === tier.id || (user?.isPro && tier.id === 'pro')}
+                onClick={() => handleSubscribe(tier.id)}
+                disabled={true}
                 className={`mt-8 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
                   tier.buttonVariant === 'solid'
-                    ? 'bg-blue-600 text-white hover:bg-blue-500 focus-visible:outline-blue-600'
-                    : 'bg-white text-blue-600 ring-1 ring-inset ring-blue-600 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600'
-                } disabled:opacity-50`}
+                    ? 'bg-gray-400 text-white cursor-not-allowed'
+                    : 'bg-white text-gray-400 ring-1 ring-inset ring-gray-300 cursor-not-allowed dark:bg-gray-700'
+                }`}
               >
-                {isLoading === tier.id
-                  ? 'Processing...'
-                  : user?.isPro && tier.id === 'pro'
-                  ? 'Current Plan'
-                  : tier.buttonText}
+                {tier.buttonText}
               </button>
             </div>
             <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-8">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-white">What's included</h4>
+              <h4 className="text-sm font-medium text-gray-900 dark:text-white tracking-wide uppercase">
+                What's included
+              </h4>
               <ul role="list" className="mt-6 space-y-4">
                 {tier.features.map((feature) => (
                   <li key={feature} className="flex space-x-3">
-                    <CheckIcon
-                      className="h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400"
-                      aria-hidden="true"
-                    />
+                    <CheckIcon className="h-5 w-5 flex-shrink-0 text-green-500" />
                     <span className="text-sm text-gray-500 dark:text-gray-400">{feature}</span>
                   </li>
                 ))}
@@ -130,6 +101,34 @@ export default function Billing() {
           </motion.div>
         ))}
       </div>
+
+      {user && (
+        <div className="mt-12 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+            Current Plan Status
+          </h3>
+          <dl className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="flex items-center">
+              <CreditCardIcon className="h-5 w-5 text-gray-400" />
+              <dt className="ml-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+                Subscription Status
+              </dt>
+              <dd className="ml-auto text-sm font-medium text-gray-900 dark:text-white">
+                Free Trial
+              </dd>
+            </div>
+            <div className="flex items-center">
+              <CheckCircleIcon className="h-5 w-5 text-gray-400" />
+              <dt className="ml-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+                Remaining Credits
+              </dt>
+              <dd className="ml-auto text-sm font-medium text-gray-900 dark:text-white">
+                Unlimited (Trial)
+              </dd>
+            </div>
+          </dl>
+        </div>
+      )}
     </div>
   );
 } 
