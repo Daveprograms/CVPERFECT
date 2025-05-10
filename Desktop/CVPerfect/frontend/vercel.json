@@ -7,10 +7,6 @@
   "regions": ["iad1"],
   "env": {
     "NEXT_PUBLIC_API_URL": "https://api.cvperfect.com",
-    "NEXT_PUBLIC_APP_URL": "https://cvperfect.com",
-    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@stripe-publishable-key",
-    "STRIPE_SECRET_KEY": "@stripe-secret-key",
-    "NEXT_PUBLIC_STRIPE_PRO_PRICE_ID": "@stripe-pro-price-id",
-    "NEXT_PUBLIC_STRIPE_ONE_TIME_PRICE_ID": "@stripe-one-time-price-id"
+    "NEXT_PUBLIC_APP_URL": "https://cvperfect.com"
   }
 } 
